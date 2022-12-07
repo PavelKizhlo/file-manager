@@ -1,0 +1,13 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "RS School task",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js -- --username=your_username"
+  },
+  "type": "module",
+  "keywords": ["node"],
+  "author": "Pavel Hizhlo",
+  "license": "ISC"
+}
