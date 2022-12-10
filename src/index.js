@@ -1,9 +1,12 @@
-import * as readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import { stdin, stdout } from 'node:process';
+import { createInterface } from 'node:readline/promises';
 import { homedir } from 'os';
-import * as color from './libs/color/color.js'
+import { green, yellow } from './libs/color/color.js';
+import { commandController } from './controller.js';
+
 
 function startFileManager () {
+  const pwd = homedir();
   const args = process.argv.slice(2);
   const userNameArg = args.find(arg => arg.match(/^--username/));
 
@@ -11,15 +14,18 @@ function startFileManager () {
       userNameArg.replace('--username=', '').trim() :
       'Anonymous';
 
-  let pwd = homedir();
+  const rl = createInterface({
+    input: stdin,
+    output: stdout
+  });
 
-  const rl = readline.createInterface({input, output});
+  console.log(green(`Welcome to the File Manager, ${userName}!`))
+  console.log(yellow(`You are currently in ${pwd}`))
 
-  console.log(color.green(`Welcome to the File Manager, ${userName}!`))
-  console.log(color.yellow(`You are currently in ${pwd}`))
+  rl.on('line', commandController(pwd));
 
   rl.on('close', () => {
-    console.log(color.green(`Thank you for using File Manager, ${userName}, goodbye!`))
+    console.log(green(`Thank you for using File Manager, ${userName}, goodbye!`))
   })
 }
 
