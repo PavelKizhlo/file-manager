@@ -5,7 +5,7 @@ import { red } from '../libs/color/color.js';
 
 export async function changeDir(pwd, args) {
   if (!args.length) {
-    return homedir;
+    return homedir();
   }
 
   const newPath = resolve(pwd, args[0]);

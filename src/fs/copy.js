@@ -10,31 +10,36 @@ export async function copyFile(pwd, args) {
 
     if (!srcPath) return;
 
+    if (!args[1]) {
+      console.log(red('Invalid input. Please, enter destination dirname'))
+      return;
+    }
+
     const filename = parse(srcPath).base;
 
     const destDirname = args[1];
 
     const destPath = await resolveDirPath(pwd, destDirname, filename);
 
-    const readStream = createReadStream(srcPath);
-    const writeStream = createWriteStream(destPath, { flags: 'wx' });
+    if (!destPath) return;
 
-    readStream.pipe(writeStream);
+    await new Promise((resolve, reject) => {
+      const readStream = createReadStream(srcPath);
+      const writeStream = createWriteStream(destPath, { flags: 'wx' });
 
-    await new Promise(resolve => {
-      readStream.on('end', () => {
-        console.log(green('File was copied'));
-        resolve();
-      })
+      readStream.pipe(writeStream);
+
+      writeStream.on('close', () => {
+        resolve('File was copied');
+      });
+
       writeStream.on('error', (err) => {
         if (err.code === 'EEXIST') {
-          console.log(red('Operation failed. File already exists'));
-        } else {
-          throw err;
+          reject('Operation failed. File already exists');
         }
-        resolve();
       })
-    })
+    }).then(msg => console.log(green(msg)))
+      .catch(msg => console.log(red(msg)));
   } catch {
     console.log(red('Operation failed'));
   }
