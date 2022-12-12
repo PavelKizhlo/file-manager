@@ -20,7 +20,7 @@ function commandController(pwd) {
 
     switch (command) {
       case 'up':
-        pwd = goUpDir(pwd);
+        pwd = await goUpDir(pwd);
         break;
       case 'cd':
         pwd = await changeDir(pwd, args);

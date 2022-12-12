@@ -1,13 +1,6 @@
-import { parse, join } from 'path';
+import { changeDir } from './changedir.js';
 
-export function goUpDir(pwd) {
-  const parsedPath = parse(pwd);
-  const root = parsedPath.root;
-  const dir = parsedPath.dir;
-
-  if (pwd === root) {
-    return pwd;
-  }
-
-  return join(root, dir);
+export async function goUpDir(pwd) {
+  const newPath = await changeDir(pwd, ['../']);
+  return newPath;
 }
