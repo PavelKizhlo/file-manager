@@ -71,9 +71,13 @@ function commandController(pwd) {
 }
 
 function parseInput(input) {
-  const parsedInputArr = input.trim().split(/\s+/);
+  const re = new RegExp(/\s+(?=(?:"[^"]*"|[^"])*$)/);
+  const parsedInputArr = input.trim().split(re);
   const command = parsedInputArr[0];
-  const args = parsedInputArr.slice(1);
+  const args = parsedInputArr
+      .slice(1)
+      .map(arg => arg.replace(/(^")|("$)/g, ''));
+
   return { command, args };
 }
 
