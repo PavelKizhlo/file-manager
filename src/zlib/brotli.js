@@ -1,9 +1,9 @@
 import { createReadStream, createWriteStream } from 'fs';
-import { parse } from 'path';
+import { parse, resolve } from 'path';
 import { createBrotliCompress, createBrotliDecompress } from 'zlib';
 import { green, red } from '../libs/color/color.js';
 import { resolveFilePath } from '../libs/pathCheck/resolveFilePath.js';
-import { resolveDirPath } from '../libs/pathCheck/resolveDirPath.js';
+import { checkPathExists } from '../libs/pathCheck/checkPathExists.js';
 
 export async function brotli(pwd, command, args) {
   try {
@@ -12,29 +12,18 @@ export async function brotli(pwd, command, args) {
     if (!srcPath) return;
 
     if (!args[1]) {
-      console.log(red('Invalid input. Please, enter destination dirname'))
+      console.log(red('Invalid input. Please, enter destination dirname'));
       return;
     }
 
-    let filename = parse(srcPath).base;
+    const destPath = resolve(pwd, args[1]);
+    const destDirname = parse(destPath).dir;
 
-    if (command === 'decompress') {
-      const isBrotliCompressed = filename.match(/.br$/);
-      if (!isBrotliCompressed) {
-        console.log(red('Invalid input. This file can\'t be decompressed'));
-        return;
-      }
-      filename = filename.replace(/.br$/, '');
-    }
+    const destPathExists = await checkPathExists(destDirname);
 
-    const destDirname = args[1];
-
-    let destPath = await resolveDirPath(pwd, destDirname, filename);
-
-    if (!destPath) return;
-
-    if (command === 'compress') {
-      destPath += '.br';
+    if (!destPathExists) {
+      console.log(red('Invalid input. Please, check destination filename'));
+      return;
     }
 
     await new Promise((resolve, reject) => {
